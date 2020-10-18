@@ -20,9 +20,7 @@ pub fn run_profile(http_request: HttpRequest, num_of_requests: &str) -> anyhow::
             let local_arc = Arc::clone(&http_request_arc);
             threads.push(s.spawn(move |_| {
                 let gaurd = local_arc.read().unwrap();
-                let before = std::time::Instant::now();
-                let (read, mut buff) = gaurd.run()?;
-                let time = before.elapsed();
+                let (read, mut buff, time) = gaurd.run()?;
                 Ok(ResponseData {
                     time,
                     bytes_read: read,

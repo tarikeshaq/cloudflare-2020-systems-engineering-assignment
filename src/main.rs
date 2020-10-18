@@ -67,7 +67,7 @@ pub fn main() -> anyhow::Result<()> {
     if matches.is_present("profile") {
         run_profile(http_request, matches.value_of("profile").unwrap())
     } else {
-        let (amount_read, buff) = http_request.run()?;
+        let (amount_read, buff, _) = http_request.run()?;
         println!("Read {} bytes", Red.paint(amount_read.to_string()));
         let split = std::str::from_utf8(&buff)?;
         let mut split = split.split_terminator("\r\n\r\n");

@@ -48,7 +48,7 @@ impl<'a> HttpRequest<'a> {
         })
     }
 
-    pub fn run(&self) -> anyhow::Result<(usize, Vec<u8>)> {
+    pub fn run(&self) -> anyhow::Result<(usize, Vec<u8>, std::time::Duration)> {
         let mut addr = self.host.to_string();
         addr.push_str(":80");
         let mut stream = TcpStream::connect(&addr)?;
@@ -58,7 +58,8 @@ impl<'a> HttpRequest<'a> {
         // There are ways to grab the full response, but that would require digging into
         // the headers, pulling out the Content-Length/Transfer-Encoding
         let mut buff = vec![0u8; 2096];
+        let instant = std::time::Instant::now();
         let amount_read = stream.read(&mut buff)?;
-        Ok((amount_read, buff))
+        Ok((amount_read, buff, instant.elapsed()))
     }
 }
