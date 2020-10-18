@@ -2,7 +2,7 @@ use crate::http::HttpRequest;
 use ansi_term::Color::Green;
 use crossbeam::thread;
 use crossbeam::thread::ScopedJoinHandle;
-use std::sync::{Arc, RwLock};
+use std::sync::Arc;
 struct ResponseData {
     time: std::time::Duration,
     bytes_read: usize,
@@ -14,13 +14,12 @@ pub fn run_profile(http_request: HttpRequest, num_of_requests: &str) -> anyhow::
 
     let data = thread::scope(|s| -> anyhow::Result<Vec<ResponseData>> {
         let mut data: Vec<ResponseData> = vec![];
-        let http_request_arc = Arc::new(RwLock::new(http_request));
+        let http_request_arc = Arc::new(http_request);
         let mut threads: Vec<ScopedJoinHandle<anyhow::Result<ResponseData>>> = vec![];
         for _ in 0..num_of_requests {
             let local_arc = Arc::clone(&http_request_arc);
             threads.push(s.spawn(move |_| {
-                let gaurd = local_arc.read().unwrap();
-                let (read, mut buff, time) = gaurd.run()?;
+                let (read, mut buff, time) = local_arc.run()?;
                 Ok(ResponseData {
                     time,
                     bytes_read: read,
