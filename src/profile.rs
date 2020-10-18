@@ -1,26 +1,41 @@
 use crate::http::HttpRequest;
 use ansi_term::Color::Green;
-
+use crossbeam::thread;
+use crossbeam::thread::ScopedJoinHandle;
+use std::sync::{Arc, RwLock};
 struct ResponseData {
     time: std::time::Duration,
     bytes_read: usize,
     err_code: Option<u32>,
 }
 
-pub fn run_profile(http_request: &HttpRequest, num_of_requests: &str) -> anyhow::Result<()> {
+pub fn run_profile(http_request: HttpRequest, num_of_requests: &str) -> anyhow::Result<()> {
     let num_of_requests = num_of_requests.parse::<u32>()?;
 
-    let mut data = vec![];
-    for _ in 0..num_of_requests {
-        let before = std::time::Instant::now();
-        let (read, mut buff) = http_request.run()?;
-        let time = before.elapsed();
-        data.push(ResponseData {
-            time,
-            bytes_read: read,
-            err_code: is_error(&mut buff),
-        });
-    }
+    let data = thread::scope(|s| -> anyhow::Result<Vec<ResponseData>> {
+        let mut data: Vec<ResponseData> = vec![];
+        let http_request_arc = Arc::new(RwLock::new(http_request));
+        let mut threads: Vec<ScopedJoinHandle<anyhow::Result<ResponseData>>> = vec![];
+        for _ in 0..num_of_requests {
+            let local_arc = Arc::clone(&http_request_arc);
+            threads.push(s.spawn(move |_| {
+                let gaurd = local_arc.read().unwrap();
+                let before = std::time::Instant::now();
+                let (read, mut buff) = gaurd.run()?;
+                let time = before.elapsed();
+                Ok(ResponseData {
+                    time,
+                    bytes_read: read,
+                    err_code: is_error(&mut buff),
+                })
+            }));
+        }
+        for thread in threads {
+            data.push(thread.join().unwrap()?);
+        }
+        Ok(data)
+    })
+    .unwrap()?;
     print_profile(num_of_requests, &data);
     Ok(())
 }

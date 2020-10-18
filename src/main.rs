@@ -65,7 +65,7 @@ pub fn main() -> anyhow::Result<()> {
     let url = url::Url::parse(&url)?;
     let http_request = HttpRequest::new(&url)?;
     if matches.is_present("profile") {
-        run_profile(&http_request, matches.value_of("profile").unwrap())
+        run_profile(http_request, matches.value_of("profile").unwrap())
     } else {
         let (amount_read, buff) = http_request.run()?;
         println!("Read {} bytes", Red.paint(amount_read.to_string()));
