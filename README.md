@@ -1,4 +1,4 @@
-# Systems Assignment 🦀
+# Systems Assignment 🦀 [![crates.io](https://img.shields.io/crates/v/cloudflare-systems-assignment)](https://crates.io/crates/cloudflare-systems-assignment) [![status](https://github.com/tarikeshaq/cloudflare-2020-systems-engineering-assignment/workflows/Rust/badge.svg)](https://github.com/tarikeshaq/cloudflare-2020-systems-engineering-assignment/actions) [![status](https://docs.rs/cloudflare-systems-assignment/badge.svg?version=0.1.0)](https://docs.rs/crate/cloudflare-systems-assignment/0.1.0)
 
 ## Prerequisites:
 - Clone the repo ⬇️ using `git clone https://github.com/tarikeshaq/cloudflare-2020-systems-engineering-assignment` 
