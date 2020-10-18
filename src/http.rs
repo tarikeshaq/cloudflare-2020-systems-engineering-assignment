@@ -44,7 +44,7 @@ impl<'a> HttpRequest<'a> {
                 .host_str()
                 .ok_or_else(|| anyhow::format_err!("The URl does not have a valid hose"))?,
             accept: "*",
-            connection: "keep-alive",
+            connection: "close",
         })
     }
 
@@ -53,13 +53,23 @@ impl<'a> HttpRequest<'a> {
         addr.push_str(":80");
         let mut stream = TcpStream::connect(&addr)?;
         stream.write(self.to_string().as_bytes())?;
-        // To make things uhhh "easier", we only care about the first 2KB
-        // of response data if there is more.
-        // There are ways to grab the full response, but that would require digging into
-        // the headers, pulling out the Content-Length/Transfer-Encoding
-        let mut buff = vec![0u8; 2096];
+        let mut buff = vec![0u8; 4096];
         let instant = std::time::Instant::now();
-        let amount_read = stream.read(&mut buff)?;
+        // We read till the socket is closed on the server side
+        // this is okay since we indicate in our request that we
+        // would like to close the connection once the request is serviced
+        // NOTE: Big problem here is that we are **NOT** streaming the recieved data
+        // so in the case we recieve more data than our heap can handle, we will
+        // crash and burn. Is it possible? Yes, is it probable? well no
+
+        // A better approach if I had the time would be to use a BufReader and return that
+        // then, when we print or manupilate the response, we read as we go
+
+        // An even better approach would be to read the headers first (reading till we find a `\r\n\r\n`)
+        // investigate the `Content-length` or the `Transfer-Encoding` and appropriately decide how much to read from the response
+        // buuut a clean way to do that would involve desearializing the headers into Rust types, supporting content-length and chunking
+        // and add a few more features and we'd have a full Http library :)
+        let amount_read = stream.read_to_end(&mut buff)?;
         Ok((amount_read, buff, instant.elapsed()))
     }
 }

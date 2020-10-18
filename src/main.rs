@@ -71,8 +71,16 @@ pub fn main() -> anyhow::Result<()> {
         println!("Read {} bytes", Red.paint(amount_read.to_string()));
         let split = std::str::from_utf8(&buff)?;
         let mut split = split.split_terminator("\r\n\r\n");
-        println!("Headers: \n{}", Blue.paint(split.next().unwrap()));
-        println!("Body: \n{}", Green.paint(split.next().unwrap()));
+        if let Some(headers) = split.next() {
+            println!("Headers: \n{}", Blue.paint(headers));
+        } else {
+            anyhow::bail!("No headers available");
+        }
+        if let Some(body) = split.next() {
+            println!("Body: \n{}", Green.paint(body));
+        } else {
+            anyhow::bail!("No body available");
+        }
         Ok(())
     }
 }
