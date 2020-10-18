@@ -1,6 +1,6 @@
 [package]
 name = "cloudflare-systems-assignment"
-version = "0.1.0"
+version = "0.2.2"
 authors = ["Tarik Eshaq"]
 edition = "2018"
 license = "MIT"
@@ -14,8 +14,6 @@ readme = "README.md"
 [dependencies]
 anyhow = "1.0"
 ansi_term = "0.12"
-serde = { version = "1.0", features = ["derive"]}
-serde_json = "1.0"
 clap = "2.33"
 url = "2.1"
 billboard = "0.1.0"
