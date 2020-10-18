@@ -1,57 +1,35 @@
-# Systems Assignment
+# Systems Assignment 🦀
 
-## What is it?
+## Prerequisites:
+- Clone the repo ⬇️ using `git clone https://github.com/tarikeshaq/cloudflare-2020-systems-engineering-assignment` 
+- You would need Rust installed, best way to do that is the `rustup` route: https://rustup.rs/
+- That's it!
 
-This exercise is a follow-on to the [General Assignment](https://github.com/cloudflare-hiring/cloudflare-2020-general-engineering-assignment), you'll need to complete that first.  In this assignment you'll write a program that makes a request to the endpoints you created in the General Assignment.  This is a systems assignment so we want to see that you're able to use sockets directly rather than using a library that handles the HTTP request.
+## How to run:
+Convieniently this crate is published on crates.io so you could pull it from there, however, if you want to run it locally
+simply run:
 
-## Useful Links
+```
+cargo run -- --url <URL> --profile <NUMBER>
+```
 
-- [A Tour of Go](https://tour.golang.org/welcome/1)
-- [The Rust Programming Language](https://doc.rust-lang.org/book/index.html)
-- [Cloudflare General Assignment](https://github.com/cloudflare-hiring/cloudflare-2020-general-engineering-assignment)
+(Note, you can also add the `--release` flag to run an optimized version of the crate)
 
-## Requirements
+And it would run `NUMBER` of HTTP get requests against `URL`, and present you with results.
 
-### 1. Use one of the specified languages
+### See the response
+In addition to the profiling data, if you'd like to see the response of a request, simply omit the `--profile`.
+I chose not to show the responses when we profile as that would just clutter the stdout.
 
-Choose from among C/C++/Go/Rust. If you aren't familiar with these languages, you're not alone! Many engineers join Cloudflare without
-specific language experience. See the Useful Links section for some quickstart guides.
+i.e, if you run `cargo run -- --url https://tarikeshaq.tarikesh.workers.dev/links` it will print out the response
 
-### 2. Use an off the shelf build tool
+## Example outputs:
+- When running `cargo run --release -- --url https://tarikeshaq.tarikesh.workers.dev/links --profile 10`:
+![Profile of running requests against Cloudflare](./static/cloudflare-worker-response.JPG)
+- When running `cargo run --release -- --url https://aws.random.cat/meow --profile 10`
+![Profile of running requests against random cat images](./static/random-cat.JPG)
 
-Choose something to build your assignment that works with the language you chose (Cargo, Make, CMake etc.).  Include instructions in your readme on how to build and run your program.  Don't check-in binaries, we won't run a pre-compiled binary.
+It seems that the cloudflare website is pretty darn fast 🥳
 
-### 3. Do **NOT** use a library to handle the HTTP request
-
-We want to see how familiar you are with systems work.  Although we would normally recommend using a library to handle HTTP requests, for this assignment we want to see how you handle it yourself.
-
-### 4. Create a CLI tool that makes a request to your links page
-
-Your CLI tool should take an argument that is a full URL (--url).  The tool will make an HTTP request to the URL and print the response directly to the console.  Test the CLI tool by specifying the /links URL in your General Assignment and make sure it prints the entire json document with all your links.
-
-Your CLI tool should also allow a --help parameter that describes how to use it.
-
-Feel free to use a library to handle command line argument parsing (getopt etc.).
-
-### 5. Measure how fast it is
-
-Next, add logic to your tool to profile your page.  Add a new argument --profile that takes a positive integer.  Your tool should make that number of requests to your site.  Time the requests and print:
-
-* The number of requests
-* The fastest time
-* The slowest time
-* The mean & median times
-* The percentage of requests that succeeded
-* Any error codes returned that weren't a success
-* The size in bytes of the smallest response
-* The size in bytes of the largest response
-
-Include a screenshot of your tool run against your site and another webpage.
-
-Test your tool against your site and some other websites.  Let us know what you find in your readme.  Include outputs for popular sites and your own.  How do we compare?
-
-## Submitting your project
-
-When submitting your project, you should prepare your code for upload to Greenhouse. The preferred method for doing this is to create a "ZIP archive" of your project folder: for more instructions on how to do this on Windows and Mac, see [this guide](https://www.sweetwater.com/sweetcare/articles/how-to-zip-and-unzip-files/).
-
-Please provide the source code only, a compiled binary is not necessary.
+## License
+This is a project solving an optional assignment from cloudflare and thus is licensed using the same license. Check it out in [`LICENSE`](./LICENSE)
