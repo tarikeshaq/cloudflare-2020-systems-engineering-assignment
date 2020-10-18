@@ -31,8 +31,8 @@ fn print_profile(num_of_requests: u32, data: &[ResponseData]) {
         .map(|rd| rd.time)
         .collect::<Vec<std::time::Duration>>();
     durations.sort();
-    let fastest_time = durations.iter().min().unwrap();
-    let slowest_time = durations.iter().max().unwrap();
+    let fastest_time = durations.first().unwrap();
+    let slowest_time = durations.last().unwrap();
     let sum: std::time::Duration = durations.iter().sum();
     let mean = sum.as_millis() as f64 / num_of_requests as f64;
     let mid = num_of_requests / 2;
@@ -47,8 +47,26 @@ fn print_profile(num_of_requests: u32, data: &[ResponseData]) {
     let max_read = num_bytes.iter().max().unwrap();
     let min_read = num_bytes.iter().min().unwrap();
 
-    let display_str = format!("Number of Requests:   {}\nFastest Time:    {}ms\nSlowest Time:    {}ms\nMean Time:    {}ms\nMedian Time:   {}ms\nSuccessful Percentage:   {}%\nError Codes:   {:?}\nSmallest Size:   {} bytes\nLargest Size:   {}bytes",
-                                        num_of_requests, fastest_time.as_millis(), slowest_time.as_millis(), mean, median.as_millis(), sucess_percent * 100f64, err_codes, min_read, max_read);
+    let display_str = format!(
+        "Number of Requests:   {}\n\
+                                      Fastest Time:    {}ms\n\
+                                      Slowest Time:    {}ms\n\
+                                      Mean Time:    {}ms\n\
+                                      Median Time:   {}ms\n\
+                                      Successful Percentage:   {}%\n\
+                                      Error Codes:   {:?}\n\
+                                      Smallest Size:   {} bytes\n\
+                                      Largest Size:   {} bytes",
+        num_of_requests,
+        fastest_time.as_millis(),
+        slowest_time.as_millis(),
+        mean,
+        median.as_millis(),
+        sucess_percent * 100f64,
+        err_codes,
+        min_read,
+        max_read
+    );
 
     billboard::Billboard::default().display(Green.paint(&display_str).to_string().as_ref());
 }
